@@ -5,9 +5,10 @@
 # 2. 使用方法
 
 在 Ref.docx 中放入格式正确的参考文献格式
+
 ![1](README_fig/1.jpg)
 
-或者自定义 Get_title.py 文件，使得 main 文件接收一个包含文章题目的 list，在 main 中定义为 NeedFind_PaperTitle
+或者自定义 Get_title.py 文件，使得 main 文件接收一个包含文章题目的 list，这个变量在 main_1.py 中定义为 NeedFind_PaperTitle
 
 ## 2.1. main_1.py
 
@@ -16,16 +17,19 @@
 ![1](README_fig/5.jpg)
 
 结果存放在 Data.xlsx 中：
+
 ![1](README_fig/2.jpg)
 
 ### 2.1.1. 假引用
 
-页面显示的引用数目
+页面显示的引用数目：
+
 ![1](README_fig/3.jpg)
 
 ### 2.1.2. 真引用
 
-实际能查到的引用数目
+实际能查到的引用数目：
+
 ![1](README_fig/4.jpg)
 
 ## 2.2. main_2.py 和 main_3.py

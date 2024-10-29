@@ -2,12 +2,10 @@ import concurrent
 import os
 import re
 import time
-
 import pandas as pd
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-
 from Global_Using import Global_Using
 
 
@@ -27,6 +25,7 @@ def process_paper(iii, paper_index):
 	cleaned_string = paper_index.strip('[]').replace("'", "")
 	url_index_list = [url.strip() for url in cleaned_string.split(',')]
 
+	paper_data = []  # 存储每篇文章的数据
 	for jjj, url_index_in_a_paper in enumerate(url_index_list):
 		print(f'进度：{iii + 1}/{len(url_all)}--{jjj + 1}/{len(url_index_list)}')
 		driver.get(url_index_in_a_paper)
@@ -42,12 +41,11 @@ def process_paper(iii, paper_index):
 
 		try:
 			scroll(driver)
-			address_element = WebDriverWait(driver, 10).until(
+			address_element = WebDriverWait(driver, 8).until(
 				EC.element_to_be_clickable((By.XPATH, '//*[@id="snMainArticle"]/div[9]/span'))
 			)
 			address_element_text = address_element.text
 		except Exception as e:
-			print(e)
 			print(f"\033[91m文章 '{Ref_index_main.iloc[iii, 0]}' 出现错误\033[0m")
 			print(f"\033[91m在 {url_index_in_a_paper}\033[0m")
 			address_element_text = ""
@@ -70,9 +68,10 @@ def process_paper(iii, paper_index):
 			'引用index': jjj,
 			'单位': address_list
 		}
-		one_paper_data.append(index_data)
+		paper_data.append(index_data)
 
 	driver.quit()
+	return paper_data  # 返回处理的数据
 
 
 # 定义路径和文件名
@@ -87,8 +86,13 @@ one_paper_data = []
 
 # 使用多线程进行并发处理
 with concurrent.futures.ThreadPoolExecutor(max_workers=os.cpu_count()) as executor:
-	for iii, paper_index in enumerate(url_all):
-		executor.submit(process_paper, iii, paper_index)
+	future_to_paper = {executor.submit(process_paper, iii, paper_index): iii for iii, paper_index in enumerate(url_all)}
+	for future in concurrent.futures.as_completed(future_to_paper):
+		try:
+			result = future.result()  # 获取每个任务的结果
+			one_paper_data.extend(result)  # 将结果添加到总数据中
+		except Exception as e:
+			print(f"处理文章时出现错误：{e}")
 
 # 存储为 Excel
 for entry in one_paper_data:

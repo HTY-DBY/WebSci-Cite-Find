@@ -8,23 +8,17 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 
-def scroll():
-	SCROLL_PAUSE_TIME = 0.05  # 每次滚动的时长
-	scroll_step = 500  # 每次滚动的步长
-	"""滚动到页面底部"""
-	last_height = driver.execute_script("return document.body.scrollHeight")
-	while True:
+def scroll_to_bottom(driver, n=50, scroll_step=500, pause_time=0.03):
+	"""向下滚动n次，每次滚动固定步长。"""
+	for _ in range(n):
 		driver.execute_script(f"window.scrollBy(0, {scroll_step});")
-		time.sleep(SCROLL_PAUSE_TIME)
-		new_height = driver.execute_script("return document.body.scrollHeight")
-		if new_height == last_height:
-			break
-		last_height = new_height
+		time.sleep(pause_time)  # 暂停以模拟人为滚动，确保页面稳定加载
 
 
 def search_paper_titles(titles):
 	# 存储列表
 	paper_data = []
+	next_is = 0
 	"""搜索每个标题并获取引用数据"""
 	for index, title in enumerate(titles):
 		try:
@@ -55,8 +49,11 @@ def search_paper_titles(titles):
 					WebDriverWait(driver, 2).until(
 						EC.element_to_be_clickable((By.XPATH, '/html/body/app-wos/main/div/div/div[2]/div/div/div[2]/app-input-route/app-base-summary-component/div/div[2]/app-records-list/app-record[1]/div'))
 					)
+					if next_is == 0:
+						Global_Using().accept_nexts(driver)
+						next_is = 1
 
-					scroll()  # 滚动页面
+					scroll_to_bottom(driver)  # 滚动页面
 
 					# 获取页面源码
 					page_source = driver.page_source

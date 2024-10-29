@@ -1,3 +1,4 @@
+import os.path
 import time
 
 from selenium import webdriver
@@ -11,7 +12,7 @@ from webdriver_manager.microsoft import EdgeChromiumDriverManager
 
 class Global_Using:
 	def __init__(self):
-		self.my_path = r'D:\hty\creat\code\python\web sci search'
+		self.my_path = os.getcwd()
 
 	# 初始化浏览器的设置
 	def init_driver(self):
@@ -25,7 +26,7 @@ class Global_Using:
 		driver = webdriver.Edge(service=edge_service, options=options)
 		return driver
 
-	# 点击接受cookie按钮
+	# 点击接受 cookie 按钮
 	def accept_cookies(self, driver):
 		print("等待点击 cookie 按钮中")
 		while True:
@@ -38,4 +39,30 @@ class Global_Using:
 				break
 			except Exception as e:
 				print(f"点击 cookie 按钮失败，继续尝试")
+				time.sleep(1)
+
+	# 点击接受 next 按钮
+	def accept_nexts(self, driver):
+		print("等待点击 next 按钮中")
+		while True:
+			try:
+				accept_button = WebDriverWait(driver, 10).until(
+					EC.element_to_be_clickable((By.XPATH, '//*[@id="pendo-button-ad6c2c35"]'))
+				)
+				accept_button.click()
+				print("已点击 next_1 按钮")
+				break
+			except Exception as e:
+				print(f"点击 next_1 按钮失败，继续尝试")
+				time.sleep(1)
+		while True:
+			try:
+				accept_button = WebDriverWait(driver, 10).until(
+					EC.element_to_be_clickable((By.XPATH, '//*[@id="pendo-button-7775f566"]'))
+				)
+				accept_button.click()
+				print("已点击 next_2 按钮")
+				break
+			except Exception as e:
+				print(f"点击 next_2 按钮失败，继续尝试")
 				time.sleep(1)
